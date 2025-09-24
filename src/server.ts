@@ -13,7 +13,7 @@ import {
   createUIMessageStreamResponse,
   type ToolSet
 } from "ai";
-import { createWorkersAI } from "workers-ai-provider";
+import { openai } from "@ai-sdk/openai";
 import { processToolCalls, cleanupMessages } from "./utils";
 import { tools, executions } from "./tools";
 // import { env } from "cloudflare:workers";
@@ -31,10 +31,8 @@ export class Chat extends AIChatAgent<Env> {
     onFinish: StreamTextOnFinishCallback<ToolSet>,
     _options?: { abortSignal?: AbortSignal }
   ) {
-    // Create model using Cloudflare AI (free alternative)
-    const model = createWorkersAI({ binding: this.env.AI })(
-      "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b"
-    );
+    // Create model with API key from environment
+    const model = openai("gpt-3.5-turbo");
 
     // const mcpConnection = await this.mcp.connect(
     //   "https://path-to-mcp-server/sse"
