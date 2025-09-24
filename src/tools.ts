@@ -128,13 +128,15 @@ const getCurrentTime = tool({
 const calculateMath = tool({
   description: "Perform safe mathematical calculations",
   inputSchema: z.object({
-    expression: z.string().describe("Mathematical expression to evaluate (e.g., '2 + 2', '10 * 5')")
+    expression: z
+      .string()
+      .describe("Mathematical expression to evaluate (e.g., '2 + 2', '10 * 5')")
   }),
   execute: async ({ expression }) => {
     console.log(`Calculating: ${expression}`);
     try {
       // Safe math evaluation - only allow basic operations
-      const sanitized = expression.replace(/[^0-9+\-*/().\s]/g, '');
+      const sanitized = expression.replace(/[^0-9+\-*/().\s]/g, "");
       const result = Function(`"use strict"; return (${sanitized})`)();
       return `Result: ${result}`;
     } catch (error) {
@@ -205,7 +207,8 @@ const saveUserData = tool({
     const { agent } = getCurrentAgent<Chat>();
     try {
       // Use SQL API for storage in Cloudflare Workers
-      await agent!.sql`INSERT OR REPLACE INTO user_data (key, data, timestamp) VALUES (${key}, ${JSON.stringify(data)}, ${Date.now()})`;
+      await agent!
+        .sql`INSERT OR REPLACE INTO user_data (key, data, timestamp) VALUES (${key}, ${JSON.stringify(data)}, ${Date.now()})`;
       return `Data saved successfully with key: ${key}`;
     } catch (error) {
       return `Error saving data: ${error}`;
@@ -225,7 +228,8 @@ const readUserData = tool({
     console.log(`Reading user data with key: ${key}`);
     const { agent } = getCurrentAgent<Chat>();
     try {
-      const result = await agent!.sql`SELECT data FROM user_data WHERE key = ${key} ORDER BY timestamp DESC LIMIT 1`;
+      const result = await agent!
+        .sql`SELECT data FROM user_data WHERE key = ${key} ORDER BY timestamp DESC LIMIT 1`;
       const row = result[0];
       return row ? `Data found: ${row.data}` : `No data found for key: ${key}`;
     } catch (error) {
@@ -242,18 +246,23 @@ const readUserData = tool({
 const fetchNews = tool({
   description: "Fetch latest news from external API",
   inputSchema: z.object({
-    category: z.string().optional().describe("News category (e.g., 'technology', 'business')"),
+    category: z
+      .string()
+      .optional()
+      .describe("News category (e.g., 'technology', 'business')"),
     limit: z.number().optional().describe("Number of articles to fetch")
   }),
   execute: async ({ category = "general", limit = 5 }) => {
     console.log(`Fetching ${limit} news articles in category: ${category}`);
     try {
       // Using a free news API
-      const response = await fetch(`https://newsapi.org/v2/top-headlines?category=${category}&pageSize=${limit}&apiKey=demo`);
+      const response = await fetch(
+        `https://newsapi.org/v2/top-headlines?category=${category}&pageSize=${limit}&apiKey=demo`
+      );
       if (!response.ok) {
         return `News API unavailable. This is a demo - in production, you'd need a real API key.`;
       }
-      const data = await response.json() as { articles?: unknown[] };
+      const data = (await response.json()) as { articles?: unknown[] };
       return `Found ${data.articles?.length || 0} articles in ${category} category.`;
     } catch (error) {
       return `Error fetching news: ${error}`;
@@ -274,12 +283,17 @@ const getWeatherReal = tool({
     console.log(`Getting weather for ${city}, ${country}`);
     try {
       // Using OpenWeatherMap API (demo key)
-      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=demo&units=metric`);
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=demo&units=metric`
+      );
       if (!response.ok) {
         return `Weather API unavailable. This is a demo - in production, you'd need a real API key.`;
       }
-      const data = await response.json() as { weather?: Array<{ description?: string }>; main?: { temp?: number } };
-      return `Weather in ${city}: ${data.weather?.[0]?.description || 'Unknown'} with temperature around ${data.main?.temp || 'N/A'}°C`;
+      const data = (await response.json()) as {
+        weather?: Array<{ description?: string }>;
+        main?: { temp?: number };
+      };
+      return `Weather in ${city}: ${data.weather?.[0]?.description || "Unknown"} with temperature around ${data.main?.temp || "N/A"}°C`;
     } catch (error) {
       return `Error fetching weather: ${error}`;
     }
@@ -336,7 +350,10 @@ const generateImage = tool({
   description: "Generate an image using AI",
   inputSchema: z.object({
     prompt: z.string().describe("Description of the image to generate"),
-    style: z.string().optional().describe("Art style (e.g., 'realistic', 'cartoon', 'abstract')")
+    style: z
+      .string()
+      .optional()
+      .describe("Art style (e.g., 'realistic', 'cartoon', 'abstract')")
   }),
   execute: async ({ prompt, style = "realistic" }) => {
     console.log(`Generating image: ${prompt} in ${style} style`);
@@ -365,13 +382,30 @@ const analyzeTextSentiment = tool({
     console.log(`Analyzing sentiment of text: ${text.substring(0, 50)}...`);
     try {
       // Simple sentiment analysis (in production, use proper AI model)
-      const positiveWords = ['good', 'great', 'excellent', 'amazing', 'wonderful', 'fantastic'];
-      const negativeWords = ['bad', 'terrible', 'awful', 'horrible', 'disappointing'];
-      
-      const words = text.toLowerCase().split(' ');
-      const positiveCount = words.filter(word => positiveWords.includes(word)).length;
-      const negativeCount = words.filter(word => negativeWords.includes(word)).length;
-      
+      const positiveWords = [
+        "good",
+        "great",
+        "excellent",
+        "amazing",
+        "wonderful",
+        "fantastic"
+      ];
+      const negativeWords = [
+        "bad",
+        "terrible",
+        "awful",
+        "horrible",
+        "disappointing"
+      ];
+
+      const words = text.toLowerCase().split(" ");
+      const positiveCount = words.filter((word) =>
+        positiveWords.includes(word)
+      ).length;
+      const negativeCount = words.filter((word) =>
+        negativeWords.includes(word)
+      ).length;
+
       if (positiveCount > negativeCount) return "Sentiment: Positive";
       if (negativeCount > positiveCount) return "Sentiment: Negative";
       return "Sentiment: Neutral";
@@ -390,7 +424,10 @@ const scrapeWebPage = tool({
   description: "Scrape content from a web page",
   inputSchema: z.object({
     url: z.string().url().describe("URL of the webpage to scrape"),
-    selector: z.string().optional().describe("CSS selector to extract specific content")
+    selector: z
+      .string()
+      .optional()
+      .describe("CSS selector to extract specific content")
   }),
   execute: async ({ url, selector }) => {
     console.log(`Scraping webpage: ${url}`);
@@ -400,7 +437,7 @@ const scrapeWebPage = tool({
         return `Failed to fetch webpage: ${response.status}`;
       }
       const html = await response.text();
-      return `Webpage scraped successfully. Content length: ${html.length} characters. Selector "${selector || 'none'}" would be applied in production.`;
+      return `Webpage scraped successfully. Content length: ${html.length} characters. Selector "${selector || "none"}" would be applied in production.`;
     } catch (error) {
       return `Error scraping webpage: ${error}`;
     }
@@ -414,23 +451,26 @@ const analyzeCode = tool({
   description: "Analyze code for quality, complexity, and potential issues",
   inputSchema: z.object({
     code: z.string().describe("Code to analyze"),
-    language: z.string().optional().describe("Programming language (e.g., 'javascript', 'python')")
+    language: z
+      .string()
+      .optional()
+      .describe("Programming language (e.g., 'javascript', 'python')")
   }),
   execute: async ({ code, language = "javascript" }) => {
     console.log(`Analyzing ${language} code`);
     try {
-      const lines = code.split('\n').length;
+      const lines = code.split("\n").length;
       const characters = code.length;
       const functions = (code.match(/function\s+\w+/g) || []).length;
       const comments = (code.match(/\/\/|\/\*|\*/g) || []).length;
-      
+
       return `Code Analysis:
 - Lines of code: ${lines}
 - Characters: ${characters}
 - Functions found: ${functions}
 - Comments: ${comments}
 - Language: ${language}
-- Complexity: ${lines > 100 ? 'High' : lines > 50 ? 'Medium' : 'Low'}`;
+- Complexity: ${lines > 100 ? "High" : lines > 50 ? "Medium" : "Low"}`;
     } catch (error) {
       return `Error analyzing code: ${error}`;
     }
@@ -443,31 +483,41 @@ const analyzeCode = tool({
 const manageMemory = tool({
   description: "Manage conversation memory and context",
   inputSchema: z.object({
-    action: z.enum(['save', 'recall', 'clear']).describe("Action to perform on memory"),
-    key: z.string().optional().describe("Memory key for save/recall operations"),
+    action: z
+      .enum(["save", "recall", "clear"])
+      .describe("Action to perform on memory"),
+    key: z
+      .string()
+      .optional()
+      .describe("Memory key for save/recall operations"),
     content: z.string().optional().describe("Content to save (for save action)")
   }),
   execute: async ({ action, key, content }) => {
-    console.log(`Managing memory: ${action} ${key || ''}`);
+    console.log(`Managing memory: ${action} ${key || ""}`);
     const { agent } = getCurrentAgent<Chat>();
-    
+
     try {
       switch (action) {
-        case 'save':
-          if (!key || !content) return "Error: key and content required for save action";
-          await agent!.sql`INSERT OR REPLACE INTO memory (key, content, timestamp) VALUES (${`memory_${key}`}, ${content}, ${Date.now()})`;
+        case "save":
+          if (!key || !content)
+            return "Error: key and content required for save action";
+          await agent!
+            .sql`INSERT OR REPLACE INTO memory (key, content, timestamp) VALUES (${`memory_${key}`}, ${content}, ${Date.now()})`;
           return `Memory saved with key: ${key}`;
-          
-        case 'recall':
+
+        case "recall":
           if (!key) return "Error: key required for recall action";
-          const result = await agent!.sql`SELECT content FROM memory WHERE key = ${`memory_${key}`} ORDER BY timestamp DESC LIMIT 1`;
+          const result = await agent!
+            .sql`SELECT content FROM memory WHERE key = ${`memory_${key}`} ORDER BY timestamp DESC LIMIT 1`;
           const memory = result[0];
-          return memory ? `Recalled: ${memory.content}` : `No memory found for key: ${key}`;
-          
-        case 'clear':
+          return memory
+            ? `Recalled: ${memory.content}`
+            : `No memory found for key: ${key}`;
+
+        case "clear":
           // In production, you'd implement proper memory clearing
           return "Memory cleared (demo implementation)";
-          
+
         default:
           return "Invalid action";
       }
@@ -488,34 +538,34 @@ export const tools = {
   scheduleTask,
   getScheduledTasks,
   cancelScheduledTask,
-  
+
   // Auto-executing tools
   getCurrentTime,
   calculateMath,
-  
+
   // Confirmation-required tools
   sendEmail,
   deleteFile,
-  
+
   // Scheduling tools
   scheduleReminder,
-  
+
   // Database/storage tools
   saveUserData,
   readUserData,
-  
+
   // External API tools
   fetchNews,
   getWeatherReal,
-  
+
   // File system tools
   readFile,
   writeFile,
-  
+
   // AI/ML tools
   generateImage,
   analyzeTextSentiment,
-  
+
   // Innovative tools
   scrapeWebPage,
   analyzeCode,
@@ -532,13 +582,21 @@ export const executions = {
     console.log(`Getting weather information for ${city}`);
     return `The weather in ${city} is sunny`;
   },
-  
-  sendEmail: async ({ to, subject, body }: { to: string; subject: string; body: string }) => {
+
+  sendEmail: async ({
+    to,
+    subject,
+    body
+  }: {
+    to: string;
+    subject: string;
+    body: string;
+  }) => {
     console.log(`Sending email to ${to}: ${subject}`);
     // In production, integrate with email service (SendGrid, AWS SES, etc.)
     return `Email sent successfully to ${to} with subject: "${subject}"`;
   },
-  
+
   deleteFile: async ({ filePath }: { filePath: string }) => {
     console.log(`Deleting file: ${filePath}`);
     // In production, implement actual file deletion with proper error handling

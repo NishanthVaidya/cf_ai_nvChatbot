@@ -32,9 +32,7 @@ export class Chat extends AIChatAgent<Env> {
     _options?: { abortSignal?: AbortSignal }
   ) {
     // Create model with API key from environment
-    const model = openai("gpt-4o-2024-11-20", {
-      apiKey: this.env.OPENAI_API_KEY
-    });
+    const model = openai("gpt-4o-2024-11-20");
 
     // const mcpConnection = await this.mcp.connect(
     //   "https://path-to-mcp-server/sse"

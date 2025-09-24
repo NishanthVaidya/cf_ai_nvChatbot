@@ -161,7 +161,12 @@ export default function Chat() {
           </div>
 
           <div className="flex-1">
-            <div><h2 className="font-semibold text-base">Cloudflare AI Agent</h2><p className="text-xs text-orange-600 dark:text-orange-400">Powered by Cloudflare Workers</p></div>
+            <div>
+              <h2 className="font-semibold text-base">Cloudflare AI Agent</h2>
+              <p className="text-xs text-orange-600 dark:text-orange-400">
+                Powered by Cloudflare Workers
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-2 mr-2">
@@ -203,7 +208,9 @@ export default function Chat() {
                   <div className="bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-full p-3 inline-flex">
                     <Robot size={24} />
                   </div>
-                  <h3 className="font-semibold text-lg">Welcome to Cloudflare AI</h3>
+                  <h3 className="font-semibold text-lg">
+                    Welcome to Cloudflare AI
+                  </h3>
                   <p className="text-muted-foreground text-sm">
                     Start a conversation with your AI assistant. Try asking
                     about:
