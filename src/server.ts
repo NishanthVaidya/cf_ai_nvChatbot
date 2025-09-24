@@ -18,17 +18,16 @@ import { processToolCalls, cleanupMessages } from "./utils";
 import { tools, executions } from "./tools";
 // import { env } from "cloudflare:workers";
 
-const model = openai("gpt-4o-2024-11-20");
-// Cloudflare AI Gateway
-// const openai = createOpenAI({
-//   apiKey: env.OPENAI_API_KEY,
-//   baseURL: env.GATEWAY_BASE_URL,
-// });
+// Model will be initialized in the fetch function to access env
 
 /**
  * Chat Agent implementation that handles real-time AI chat interactions
  */
 export class Chat extends AIChatAgent<Env> {
+  constructor(env: Env) {
+    super(env);
+  }
+
   /**
    * Handles incoming chat messages and manages the response stream
    */
@@ -36,6 +35,11 @@ export class Chat extends AIChatAgent<Env> {
     onFinish: StreamTextOnFinishCallback<ToolSet>,
     _options?: { abortSignal?: AbortSignal }
   ) {
+    // Create model with API key from environment
+    const model = openai("gpt-4o-2024-11-20", {
+      apiKey: this.env.OPENAI_API_KEY
+    });
+
     // const mcpConnection = await this.mcp.connect(
     //   "https://path-to-mcp-server/sse"
     // );
@@ -113,14 +117,14 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/check-open-ai-key") {
-      const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
+      const hasOpenAIKey = !!env.OPENAI_API_KEY;
       return Response.json({
         success: hasOpenAIKey
       });
     }
-    if (!process.env.OPENAI_API_KEY) {
+    if (!env.OPENAI_API_KEY) {
       console.error(
-        "OPENAI_API_KEY is not set, don't forget to set it locally in .dev.vars, and use `wrangler secret bulk .dev.vars` to upload it to production"
+        "OPENAI_API_KEY is not set, don't forget to set it locally in .dev.vars, and use `wrangler secret put OPENAI_API_KEY` to upload it to production"
       );
     }
     return (
