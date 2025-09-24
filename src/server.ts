@@ -32,7 +32,7 @@ export class Chat extends AIChatAgent<Env> {
     _options?: { abortSignal?: AbortSignal }
   ) {
     // Create model with API key from environment
-    const model = openai("gpt-4o-2024-11-20");
+    const model = openai("gpt-4o");
 
     // const mcpConnection = await this.mcp.connect(
     //   "https://path-to-mcp-server/sse"
@@ -59,7 +59,17 @@ export class Chat extends AIChatAgent<Env> {
         });
 
         const result = streamText({
-          system: `You are a helpful assistant that can do various tasks... 
+          system: `You are a helpful AI assistant that can perform various tasks including:
+
+- Answering questions and providing information
+- Getting weather information for any city
+- Getting current time for any location
+- Scheduling tasks and reminders
+- Sending emails
+- File operations
+- And much more!
+
+Always provide helpful, detailed, and accurate responses. Be conversational and engaging.
 
 ${getSchedulePrompt({ date: new Date() })}
 
