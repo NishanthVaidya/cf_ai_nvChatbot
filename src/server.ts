@@ -13,7 +13,7 @@ import {
   createUIMessageStreamResponse,
   type ToolSet
 } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { createWorkersAI } from "workers-ai-provider";
 import { processToolCalls, cleanupMessages } from "./utils";
 import { tools, executions } from "./tools";
 // import { env } from "cloudflare:workers";
@@ -31,8 +31,8 @@ export class Chat extends AIChatAgent<Env> {
     onFinish: StreamTextOnFinishCallback<ToolSet>,
     _options?: { abortSignal?: AbortSignal }
   ) {
-    // Create model with API key from environment
-    const model = openai("gpt-4o");
+    // Create model using Cloudflare AI (free alternative)
+    const model = createWorkersAI({ binding: this.env.AI })("@cf/meta/llama-3.1-8b-instruct");
 
     // const mcpConnection = await this.mcp.connect(
     //   "https://path-to-mcp-server/sse"
