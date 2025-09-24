@@ -32,7 +32,9 @@ export class Chat extends AIChatAgent<Env> {
     _options?: { abortSignal?: AbortSignal }
   ) {
     // Create model using Cloudflare AI (free alternative)
-    const model = createWorkersAI({ binding: this.env.AI })("@cf/meta/llama-3.1-8b-instruct");
+    const model = createWorkersAI({ binding: this.env.AI })(
+      "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b"
+    );
 
     // const mcpConnection = await this.mcp.connect(
     //   "https://path-to-mcp-server/sse"
