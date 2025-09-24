@@ -24,10 +24,6 @@ import { tools, executions } from "./tools";
  * Chat Agent implementation that handles real-time AI chat interactions
  */
 export class Chat extends AIChatAgent<Env> {
-  constructor(env: Env) {
-    super(env);
-  }
-
   /**
    * Handles incoming chat messages and manages the response stream
    */
