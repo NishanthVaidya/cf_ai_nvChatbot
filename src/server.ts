@@ -33,7 +33,7 @@ export class Chat extends AIChatAgent<Env> {
   ) {
     // Create a Workers AI instance
     const workersai = createWorkersAI({ binding: this.env.AI });
-    const model = workersai("@cf/deepseek-ai/deepseek-r1-distill-qwen-32b");
+    const model = workersai("@cf/meta/llama-2-7b-chat-fp16");
 
     // const mcpConnection = await this.mcp.connect(
     //   "https://path-to-mcp-server/sse"
