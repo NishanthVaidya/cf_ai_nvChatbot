@@ -13,7 +13,7 @@ import {
   createUIMessageStreamResponse,
   type ToolSet
 } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { createWorkersAI } from 'workers-ai-provider';
 import { processToolCalls, cleanupMessages } from "./utils";
 import { tools, executions } from "./tools";
 // import { env } from "cloudflare:workers";
@@ -31,8 +31,9 @@ export class Chat extends AIChatAgent<Env> {
     onFinish: StreamTextOnFinishCallback<ToolSet>,
     _options?: { abortSignal?: AbortSignal }
   ) {
-    // Create model with API key from environment
-    const model = openai("gpt-3.5-turbo");
+    // Create a Workers AI instance
+    const workersai = createWorkersAI({ binding: this.env.AI });
+    const model = workersai("@cf/deepseek-ai/deepseek-r1-distill-qwen-32b");
 
     // const mcpConnection = await this.mcp.connect(
     //   "https://path-to-mcp-server/sse"
@@ -68,6 +69,8 @@ export class Chat extends AIChatAgent<Env> {
 - Sending emails
 - File operations
 - And much more!
+
+IMPORTANT: Only provide the final answer to the user. Do NOT include any thinking process, reasoning, or internal thoughts in your response. Do not use <think> tags or show your internal reasoning. Just give the direct, helpful answer.
 
 Always provide helpful, detailed, and accurate responses. Be conversational and engaging.
 
