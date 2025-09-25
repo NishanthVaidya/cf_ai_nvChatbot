@@ -4,7 +4,9 @@ A comprehensive AI-powered chatbot built on Cloudflare's platform, featuring Lla
 
 ## 🚀 Live Demo
 
-[Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/?url=https://github.com/your-username/cf_ai_nvChatbot)
+[Try the Live Chatbot](https://proud-pine-5833.nishanthvaidya1998.workers.dev/)
+
+[Deploy to Your Own Cloudflare Workers](https://deploy.workers.cloudflare.com/?url=https://github.com/NishanthVaidya/cf_ai_nvChatbot)
 
 ## ✨ Features
 
@@ -59,7 +61,7 @@ This project demonstrates a complete AI-powered application using Cloudflare's p
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/cf_ai_nvChatbot.git
+git clone https://github.com/NishanthVaidya/cf_ai_nvChatbot.git
 cd cf_ai_nvChatbot
 ```
 
