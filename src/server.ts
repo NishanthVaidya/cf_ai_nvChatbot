@@ -59,9 +59,14 @@ export class Chat extends AIChatAgent<Env> {
           executions
         });
 
+        console.log("🤖 AI is processing the request...");
+        
         const result = streamText({
-          system: `You are a helpful AI assistant that can perform various tasks including:
+          system: `You are a helpful AI assistant. 
 
+RESPONSE FORMAT: Provide only the final answer. Do not include any thinking process, reasoning, or <think> tags in your response.
+
+You can help with:
 - Answering questions and providing information
 - Getting weather information for any city
 - Getting current time for any location
@@ -70,9 +75,7 @@ export class Chat extends AIChatAgent<Env> {
 - File operations
 - And much more!
 
-IMPORTANT: Only provide the final answer to the user. Do NOT include any thinking process, reasoning, or internal thoughts in your response. Do not use <think> tags or show your internal reasoning. Just give the direct, helpful answer.
-
-Always provide helpful, detailed, and accurate responses. Be conversational and engaging.
+Always be helpful, detailed, and engaging in your responses.
 
 ${getSchedulePrompt({ date: new Date() })}
 
