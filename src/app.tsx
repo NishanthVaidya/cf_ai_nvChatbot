@@ -23,7 +23,8 @@ import {
   Sun,
   Trash,
   PaperPlaneTilt,
-  Stop
+  Stop,
+  User
 } from "@phosphor-icons/react";
 
 // List of tools that require human confirmation
@@ -43,6 +44,21 @@ export default function Chat() {
   const [showDebug, setShowDebug] = useState(false);
   const [textareaHeight, setTextareaHeight] = useState("auto");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Generate a unique session ID for this user
+  const [sessionId] = useState(() => {
+    // Try to get existing session from localStorage, or create new one
+    const existingSession = localStorage.getItem("chatSessionId");
+    if (existingSession) {
+      console.log("🔄 Using existing session:", existingSession);
+      return existingSession;
+    }
+    // Generate a new session ID
+    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem("chatSessionId", newSessionId);
+    console.log("🆕 Created new session:", newSessionId);
+    return newSessionId;
+  });
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -72,8 +88,19 @@ export default function Chat() {
     setTheme(newTheme);
   };
 
+  // Create a new session (for testing purposes)
+  const createNewSession = () => {
+    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem("chatSessionId", newSessionId);
+    console.log("🔄 Created new session:", newSessionId);
+    // Reload the page to use the new session
+    window.location.reload();
+  };
+
   const agent = useAgent({
-    agent: "chat"
+    agent: "chat",
+    // Use session ID to create unique chat instances per user
+    id: sessionId
   });
 
   const [agentInput, setAgentInput] = useState("");
@@ -161,12 +188,14 @@ export default function Chat() {
           </div>
 
           <div className="flex-1">
-            <div>
-              <h2 className="font-semibold text-base">Cloudflare AI Agent</h2>
-              <p className="text-xs text-orange-600 dark:text-orange-400">
-                Powered by Cloudflare Workers
-              </p>
-            </div>
+            <div><h2 className="font-semibold text-base">Cloudflare AI Agent</h2><p className="text-xs text-orange-600 dark:text-orange-400">Powered by Cloudflare Workers</p></div>
+          </div>
+
+          <div className="flex items-center gap-2 mr-2">
+            <User size={16} />
+            <span className="text-xs text-orange-600 dark:text-orange-400 font-mono">
+              {sessionId.split('_')[1]?.substring(0, 8)}...
+            </span>
           </div>
 
           <div className="flex items-center gap-2 mr-2">
@@ -197,6 +226,17 @@ export default function Chat() {
           >
             <Trash size={20} />
           </Button>
+
+          <Button
+            variant="ghost"
+            size="md"
+            shape="square"
+            className="rounded-full h-9 w-9"
+            onClick={createNewSession}
+            title="Create New Session"
+          >
+            <User size={20} />
+          </Button>
         </div>
 
         {/* Messages */}
@@ -208,9 +248,7 @@ export default function Chat() {
                   <div className="bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-full p-3 inline-flex">
                     <Robot size={24} />
                   </div>
-                  <h3 className="font-semibold text-lg">
-                    Welcome to Cloudflare AI
-                  </h3>
+                  <h3 className="font-semibold text-lg">Welcome to Cloudflare AI</h3>
                   <p className="text-muted-foreground text-sm">
                     Start a conversation with your AI assistant. Try asking
                     about:
@@ -225,6 +263,9 @@ export default function Chat() {
                       <span>Local time in different locations</span>
                     </li>
                   </ul>
+                  <div className="text-xs text-orange-600 dark:text-orange-400 mt-4 p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
+                    <strong>Session ID:</strong> {sessionId}
+                  </div>
                 </div>
               </Card>
             </div>
